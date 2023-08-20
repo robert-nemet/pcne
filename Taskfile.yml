@@ -1,0 +1,65 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+
+  t_fmt:
+    desc: Format terraform files
+    cmds:
+      - terraform fmt -recursive 
+  
+  t_init:
+    desc: Initialize terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform init
+
+  t_plan:
+    desc: Plan terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform plan
+  
+  t_apply:
+    desc: Apply terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform apply -auto-approve
+
+  t_destroy:
+    desc: Destroy terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform destroy -auto-approve
+
+  t_output:
+    desc: Output terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform output
+
+  t_validate:
+    desc: Validate terraform
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - terraform validate
+
+  t_init_module:
+    desc: Initialize terraform module
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - touch main.tf
+      - touch variables.tf
+      - touch outputs.tf
+      - touch terraform.tfvars
+      - touch README.md
+      - touch provider.tf
+
