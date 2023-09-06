@@ -1,2 +1,0 @@
-# Manage Vms in GCP
-
