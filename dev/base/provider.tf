@@ -17,6 +17,6 @@ terraform {
 
   backend "gcs" {
     bucket = "terraform-states-network-playground-382512"
-    prefix = "terraform/state/base"
+    prefix = "terraform/state/dev/base"
   }
 }
