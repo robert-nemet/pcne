@@ -1,40 +1,45 @@
-# vpc: storage
-resource "google_compute_network" "storage" {
-  name                    = "storage"
-  description             = "Storage network"
-  auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
-}
+module "storage" {
+  source  = "terraform-google-modules/network/google"
+  version = "~> 7.3"
 
-# subnet for storage
-resource "google_compute_subnetwork" "subnet_postgres" {
-  name          = "postgres"
-  ip_cidr_range = "10.120.0.0/24"
-  network       = google_compute_network.storage.self_link
-  region        = var.region
-}
+  project_id   = var.project_id
+  network_name = "storage"
+  routing_mode = "REGIONAL"
 
-# firewall rule for storage: icmp
-resource "google_compute_firewall" "storage_icmp" {
-  name    = "storage-icmp"
-  network = google_compute_network.storage.self_link
+  description = "Storage network"
 
-  source_ranges = ["0.0.0.0/0"]
-  direction     = "INGRESS"
-  allow {
-    protocol = "icmp"
-  }
-}
+  subnets = [
+    {
+      subnet_name   = "postgres"
+      subnet_ip     = "10.120.0.0/24"
+      subnet_region = var.region
+    }
+  ]
 
-# firewall rule for storage: ssh
-resource "google_compute_firewall" "storage_ssh" {
-  name    = "storage-ssh"
-  network = google_compute_network.storage.self_link
-
-  source_ranges = ["10.1.0.0/24", "10.2.0.0/24"]
-  direction     = "INGRESS"
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
+  ingress_rules = [
+    {
+      name = "storage-icmp"
+      allow = [
+        {
+          protocol = "icmp"
+        }
+      ]
+      source_ranges = [
+        "0.0.0.0/0"
+      ]
+    },
+    {
+      name = "storage-ssh"
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["22"]
+        }
+      ]
+      source_ranges = [
+        "10.1.0.0/24",
+        "10.2.0.0/24"
+      ]
+    }
+  ]
 }

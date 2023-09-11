@@ -1,12 +1,12 @@
 output "vpc_storage" {
-  value = google_compute_network.storage.self_link
+  value = module.storage.network_self_link
 }
 
 output "vpc_storage_id" {
-  value = google_compute_network.storage.id
+  value = module.storage.network_id
 }
 
 output "vpc_storage_subnetwork" {
-  value = google_compute_subnetwork.subnet_postgres
+  value = module.storage.subnets["us-central1/postgres"]
 }
 

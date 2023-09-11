@@ -1,17 +1,17 @@
 output "vpc_back_office" {
-  value = google_compute_network.back_office.self_link
+  value = module.back-office.network_self_link
 }
 
 output "vpc_back_office_id" {
-  value = google_compute_network.back_office.id
+  value = module.back-office.network_id
 }
 
 output "vpc_back_office_subnetwork" {
-  value = google_compute_subnetwork.back_office
+  value = module.back-office.subnets["us-central1/back-office"]
 }
 
 output "vpc_back_office_private_subnetwork" {
-  value = google_compute_subnetwork.back_office_private
+  value = module.back-office.subnets["us-central1/back-office-private"]
 }
 
 output "back_office_fw_sa" {

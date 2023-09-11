@@ -6,99 +6,40 @@ resource "google_compute_project_metadata" "default" {
   }
 }
 
-# VM in back office network, subnet back-office
-resource "google_compute_instance" "back_office_vm1" {
-  name         = "back-office-vm1"
-  machine_type = "f1-micro"
-  zone         = var.zone
-
-  scheduling {
-    preemptible        = true
-    automatic_restart  = false
-    provisioning_model = "SPOT"
-  }
-
+module "back-office-vm1" {
+  source                    = "../../modules/vms"
+  zone                      = var.zone
+  machine_type              = "f1-micro"
+  name                      = "back-office-vm1"
+  network                   = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
+  subnetwork                = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
+  sa_email                  = data.terraform_remote_state.back_office.outputs.back_office_fw_sa
   allow_stopping_for_update = true
-
-  service_account {
-    email  = data.terraform_remote_state.back_office.outputs.back_office_fw_sa
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-  network_interface {
-    network    = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-    subnetwork = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
-  }
 }
 
-resource "google_compute_instance" "back_office_vm2" {
+module "back-office-vm2" {
+  source       = "../../modules/vms"
+  zone         = var.zone
+  machine_type = "f1-micro"
   name         = "back-office-vm2"
-  machine_type = "f1-micro"
-  zone         = var.zone
-
-  scheduling {
-    preemptible        = true
-    automatic_restart  = false
-    provisioning_model = "SPOT"
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-  network_interface {
-    network    = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-    subnetwork = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
-  }
+  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
+  subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
 }
 
-# VM in back office network, subnet back-office-private
-resource "google_compute_instance" "back_office_private_vm1" {
+module "back_office_private_vm1" {
+  source       = "../../modules/vms"
+  zone         = var.zone
+  machine_type = "f1-micro"
   name         = "back-office-private-vm1"
-  machine_type = "f1-micro"
-  zone         = var.zone
-
-  scheduling {
-    preemptible        = true
-    automatic_restart  = false
-    provisioning_model = "SPOT"
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-  network_interface {
-    network    = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-    subnetwork = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
-  }
+  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
+  subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
 }
 
-resource "google_compute_instance" "back_office_private_vm2" {
-  name         = "back-office-private-vm2"
-  machine_type = "f1-micro"
+module "back_office_private_vm2" {
+  source       = "../../modules/vms"
   zone         = var.zone
-
-  scheduling {
-    preemptible        = true
-    automatic_restart  = false
-    provisioning_model = "SPOT"
-  }
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-    }
-  }
-  network_interface {
-    network    = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-    subnetwork = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
-  }
+  machine_type = "f1-micro"
+  name         = "back-office-private-vm2"
+  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
+  subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
 }
