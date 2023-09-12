@@ -1,5 +1,5 @@
 module "services_vm_test" {
-  source       = "../../modules/vms"
+  source       = "../../../modules/vms"
   zone         = var.zone
   machine_type = "f1-micro"
   name         = "services-vm-test"

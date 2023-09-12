@@ -7,7 +7,7 @@ resource "google_compute_project_metadata" "default" {
 }
 
 module "back-office-vm1" {
-  source                    = "../../modules/vms"
+  source                    = "../../../modules/vms"
   zone                      = var.zone
   machine_type              = "f1-micro"
   name                      = "back-office-vm1"
@@ -18,7 +18,7 @@ module "back-office-vm1" {
 }
 
 module "back-office-vm2" {
-  source       = "../../modules/vms"
+  source       = "../../../modules/vms"
   zone         = var.zone
   machine_type = "f1-micro"
   name         = "back-office-vm2"
@@ -27,7 +27,7 @@ module "back-office-vm2" {
 }
 
 module "back_office_private_vm1" {
-  source       = "../../modules/vms"
+  source       = "../../../modules/vms"
   zone         = var.zone
   machine_type = "f1-micro"
   name         = "back-office-private-vm1"
@@ -36,7 +36,7 @@ module "back_office_private_vm1" {
 }
 
 module "back_office_private_vm2" {
-  source       = "../../modules/vms"
+  source       = "../../../modules/vms"
   zone         = var.zone
   machine_type = "f1-micro"
   name         = "back-office-private-vm2"
