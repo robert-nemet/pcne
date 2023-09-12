@@ -20,7 +20,7 @@ locals {
 }
 
 resource "google_compute_network_peering" "peerings" {
-  for_each = tomap(local.peerings)
+  for_each = local.peerings
 
   name         = each.key
   network      = each.value.network
