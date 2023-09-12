@@ -1,24 +1,28 @@
-resource "google_compute_network_peering" "back_office_service_peering" {
-  name         = "back-office-services-peering"
-  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office
-  peer_network = data.terraform_remote_state.services.outputs.vpc_services
+locals {
+  peerings = {
+    "back-office-services-peering" : {
+      "network" : data.terraform_remote_state.back_office.outputs.vpc_back_office,
+      "peer_network" : data.terraform_remote_state.services.outputs.vpc_services
+    },
+    "services-back-office-peering" : {
+      "network" : data.terraform_remote_state.services.outputs.vpc_services,
+      "peer_network" : data.terraform_remote_state.back_office.outputs.vpc_back_office,
+    },
+    "back-office-storage-peering" : {
+      "network" : data.terraform_remote_state.back_office.outputs.vpc_back_office,
+      "peer_network" : data.terraform_remote_state.storage.outputs.vpc_storage,
+    },
+    "storage-back-office-peering" : {
+      "network" : data.terraform_remote_state.storage.outputs.vpc_storage,
+      "peer_network" : data.terraform_remote_state.back_office.outputs.vpc_back_office,
+    }
+  }
 }
 
-resource "google_compute_network_peering" "service_back_office_peering" {
-  name         = "services-back-office-peering"
-  network      = data.terraform_remote_state.services.outputs.vpc_services
-  peer_network = data.terraform_remote_state.back_office.outputs.vpc_back_office
-}
+resource "google_compute_network_peering" "peerings" {
+  for_each = tomap(local.peerings)
 
-resource "google_compute_network_peering" "back_office_datastorage_peering" {
-  name         = "back-office-storage-peering"
-  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office
-  peer_network = data.terraform_remote_state.storage.outputs.vpc_storage
+  name         = each.key
+  network      = each.value.network
+  peer_network = each.value.peer_network
 }
-
-resource "google_compute_network_peering" "datastorage_back_office_peering" {
-  name         = "storage-back-office-peering"
-  network      = data.terraform_remote_state.storage.outputs.vpc_storage
-  peer_network = data.terraform_remote_state.back_office.outputs.vpc_back_office
-}
-

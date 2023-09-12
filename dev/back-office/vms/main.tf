@@ -6,40 +6,16 @@ resource "google_compute_project_metadata" "default" {
   }
 }
 
-module "back-office-vm1" {
-  source                    = "../../../modules/vms"
-  zone                      = var.zone
-  machine_type              = "f1-micro"
-  name                      = "back-office-vm1"
-  network                   = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-  subnetwork                = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
-  sa_email                  = data.terraform_remote_state.back_office.outputs.back_office_fw_sa
-  allow_stopping_for_update = true
-}
+module "vms" {
+  for_each = toset(["back-office-vm2", "back-office-private-vm1", "back-office-private-vm2", "back-office-vm1"])
 
-module "back-office-vm2" {
   source       = "../../../modules/vms"
   zone         = var.zone
   machine_type = "f1-micro"
-  name         = "back-office-vm2"
+  name         = each.value
   network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
   subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_subnetwork.id
-}
 
-module "back_office_private_vm1" {
-  source       = "../../../modules/vms"
-  zone         = var.zone
-  machine_type = "f1-micro"
-  name         = "back-office-private-vm1"
-  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-  subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
-}
-
-module "back_office_private_vm2" {
-  source       = "../../../modules/vms"
-  zone         = var.zone
-  machine_type = "f1-micro"
-  name         = "back-office-private-vm2"
-  network      = data.terraform_remote_state.back_office.outputs.vpc_back_office_id
-  subnetwork   = data.terraform_remote_state.back_office.outputs.vpc_back_office_private_subnetwork.id
+  sa_email                  = "back-office-vm1" == each.value ? data.terraform_remote_state.back_office.outputs.back_office_fw_sa : ""
+  allow_stopping_for_update = "back-office-vm1" == each.value ? true : false
 }
